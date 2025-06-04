@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Barra Powerlifting Calculator</title>
+  <style>
+    body {
+      background-color: #111;
+      color: white;
+      font-family: Arial, sans-serif;
+      padding: 2rem;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center; /* Centraliza tudo em coluna */
+      min-height: 100vh;
+    }
+    .logo {
+      max-height: 300px; /* Logo bem grande */
+      margin-bottom: 3rem;
+      display: block;
+    }
+    .calculator {
+      background-color: #222;
+      padding: 1rem 2rem;
+      border-radius: 10px;
+      margin-bottom: 2rem;
+      width: 500px; /* largura maior pra não ficar apertado */
+      box-sizing: border-box;
+    }
+    label {
+      display: block;
+      margin-top: 1rem;
+    }
+    input, select {
+      width: 100%;
+      padding: 0.5rem;
+      margin-top: 0.5rem;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+      color: white;
+      background-color: #333;
+      box-sizing: border-box;
+    }
+    button {
+      margin-top: 1rem;
+      padding: 0.5rem 1rem;
+      background-color: red;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      width: 100%;
+      font-weight: bold;
+    }
+    .result {
+      margin-top: 1rem;
+      font-weight: bold;
+    }
+
+    /* Responsividade simples */
+    @media (max-width: 540px) {
+      .calculator {
+        width: 90%;
+        padding: 1rem;
+      }
+      .logo {
+        max-height: 200px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <img src="logo.png" alt="Logo Barra Powerlifting" class="logo" />
+
+  <!-- Calculadora de Porcentagem -->
+  <div class="calculator">
+    <h2>Calculadora de Back-off / PR</h2>
+    <label for="maxLift">Carga máxima (kg)</label>
+    <input type="number" id="maxLift" placeholder="Ex: 100" />
+
+    <label for="percent">Variação (%)</label>
+    <input type="number" id="percent" placeholder="Ex: 12" />
+
+    <label for="direction">Aplicar para:</label>
+    <select id="direction">
+      <option value="menos">Para menos (-%)</option>
+      <option value="mais">Para mais (+%)</option>
+    </select>
+
+    <button onclick="calcularPorcentagem()">Calcular</button>
+    <div id="result1" class="result"></div>
+  </div>
+
+  <!-- Calculadora de RPE -->
+  <div class="calculator">
+    <h2>Calculadora de Carga por RPE</h2>
+    <label for="rpeMax">Carga máxima (kg)</label>
+    <input type="number" id="rpeMax" placeholder="Ex: 100" />
+
+    <button onclick="calcularRPEs()">Gerar tabela de RPE</button>
+    <div id="result2" class="result"></div>
+  </div>
+
+  <script>
+    function calcularPorcentagem() {
+      const max = parseFloat(document.getElementById("maxLift").value);
+      const percent = parseFloat(document.getElementById("percent").value);
+      const direction = document.getElementById("direction").value;
+
+      if (isNaN(max) || isNaN(percent)) {
+        document.getElementById("result1").innerText = "Preencha todos os campos corretamente.";
+        return;
+      }
+
+      const result = direction === "menos"
+        ? max * (1 - percent / 100)
+        : max * (1 + percent / 100);
+
+      document.getElementById("result1").innerText = `Resultado: ${result.toFixed(2)} kg`;
+    }
+
+    function calcularRPEs() {
+      const max = parseFloat(document.getElementById("rpeMax").value);
+      if (isNaN(max)) {
+        document.getElementById("result2").innerText = "Preencha o valor da carga máxima.";
+        return;
+      }
+
+      const tabelaRPE = {
+        "10.0": 1.00,
+        "9.5": 0.975,
+        "9.0": 0.95,
+        "8.5": 0.925,
+        "8.0": 0.90,
+        "7.5": 0.875,
+        "7.0": 0.85,
+        "6.5": 0.825,
+        "6.0": 0.80
+      };
+
+      let output = "<ul>";
+      for (let rpe in tabelaRPE) {
+        let carga = (max * tabelaRPE[rpe]).toFixed(2);
+        output += `<li>RPE ${rpe}: ${carga} kg</li>`;
+      }
+      output += "</ul>";
+
+      document.getElementById("result2").innerHTML = output;
+    }
+  </script>
+</body>
+</html>
